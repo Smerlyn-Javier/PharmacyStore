@@ -1,36 +1,54 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.Models;
+using Pharmacy.Services;
 
 namespace Pharmacy.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class DrugController
+    public class DrugController : ControllerBase
     {
-        private readonly DataContext _context = null;
+        private readonly DrugService _drugService = null;
         
-        public DrugController(DataContext ctx)
+        public DrugController(DrugService drugService)
         {
-            _context = ctx;
+            _drugService = drugService;
         }
         
         [HttpGet]
-        public IEnumerable<Drug> Get()
+        public IEnumerable<Drug> GetAllDrugs()
         {
-            var drugs = _context.Drugs.ToList();
+            var drugs = _drugService.GetAll();
             return drugs;
+        }
+        
+        [HttpGet("{id}")]
+        public Drug GetDrug(int id)
+        {
+            var drug = _drugService.Get(id);
+            return drug;
         }
 
         [HttpPost]
-        public IEnumerable<Drug> Post()
+        public Drug CreateDrug([FromBody] Drug drug)
         {
-            var drugs = _context.Drugs.ToList();
-            return drugs;
+            var currentDrug = _drugService.Create(drug);
+            return currentDrug;
         }
         
+        [HttpPatch]
+        public Drug UpdateDrug([FromBody] Drug drug)
+        {
+            var currentDrug = _drugService.Update(drug);
+            return currentDrug;
+        }
         
+        [HttpDelete("{id}")]
+        public bool DeleteDrug(int id)
+        {
+            _drugService.Delete(id);
+            return true;
+        }
     }
 }
